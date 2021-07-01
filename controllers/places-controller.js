@@ -63,6 +63,10 @@ const createPlace = (req, res, next) => {
 }
 
 const updatePlace = (req, res, next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        return res.status(422).json(errors);
+    }
     const placeId = req.params.pid;
     const { title, description, coordinates, address} = req.body;
     const place = DUMMY_PLACES.find((p) => p.id === placeId);
