@@ -1,3 +1,4 @@
+const { response } = require('express');
 const { v4 } = require('uuid');
 
 const HttpError = require('../models/http-error');
@@ -56,8 +57,37 @@ const createPlace = (req, res, next) => {
     res.status(201).json({place: createdPlace});
 }
 
+const updatePlace = (req, res, next) => {
+    const placeId = req.params.pid;
+    const { title, description, coordinates, address} = req.body;
+    const place = DUMMY_PLACES.find((p) => p.id === placeId);
+    
+    if(!place) {
+        throw  new HttpError('Could not find a place with provided id', 404);
+    }
+    
+    place.title = title;
+    place.description = description;
+    place.address = address;
+    place.location = coordinates;
+
+    res.status(200).json({place}); 
+}
+
+const deletePlace = (req, res, next) => {
+    const placeId = req.params.pid;
+    const index = DUMMY_PLACES.findIndex((p) => p.id === placeId);
+    if(index > -1) {
+        DUMMY_PLACES.splice(index, 1);
+    }
+
+    res.status(200).json({message: 'Deleted place.'});
+}
+
 module.exports = {
     getPlaceById,
     getPlaceByUserId,
     createPlace,
+    updatePlace,
+    deletePlace,
 }
